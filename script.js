@@ -216,8 +216,12 @@ function validateExpiry(raw) {
     if (!raw)          { clearField('expiry');                                           return false; }
     if (raw.length < 4) { setFieldState('expiry', 'error', 'Enter full expiry date');   return false; }
     const month = parseInt(raw.slice(0, 2), 10);
-    const year  = parseInt('20' + raw.slice(2, 4), 10);
+    const yy    = parseInt(raw.slice(2, 4), 10);
     const now   = new Date();
+    // Sliding-window century: yy < (current year - 10) % 100 means next century
+    const currentYY = now.getFullYear() % 100;
+    const century   = yy < (currentYY - 10) ? Math.floor(now.getFullYear() / 100) + 1 : Math.floor(now.getFullYear() / 100);
+    const year      = century * 100 + yy;
     if (month < 1 || month > 12) { setFieldState('expiry', 'error', 'Invalid month'); return false; }
     if (year < now.getFullYear() || (year === now.getFullYear() && month < now.getMonth() + 1)) {
         setFieldState('expiry', 'error', 'Card has expired');
@@ -264,9 +268,11 @@ form.addEventListener('submit', async (e) => {
 // ============================================================
 // Confetti on success
 // ============================================================
+const CONFETTI_COUNT = 48;
+
 function launchConfetti() {
     const COLORS = ['#6c3ce4', '#ff6b9d', '#00d4ff', '#ffd700', '#00e676'];
-    for (let i = 0; i < 48; i++) {
+    for (let i = 0; i < CONFETTI_COUNT; i++) {
         const el = document.createElement('div');
         const size = Math.random() * 8 + 4;
         el.style.cssText = [
@@ -300,11 +306,14 @@ function launchConfetti() {
 // ============================================================
 // 3-D card tilt on mouse / touch
 // ============================================================
+const MAX_TILT_X = 22;
+const MAX_TILT_Y = 11;
+
 let tiltActive = false;
 
 function applyTilt(xRatio, yRatio) {
-    const rx = xRatio * 22;
-    const ry = -yRatio * 11;
+    const rx = xRatio * MAX_TILT_X;
+    const ry = -yRatio * MAX_TILT_Y;
     card3d.style.transform = `rotateY(${rx}deg) rotateX(${ry}deg) translateZ(12px)`;
 }
 

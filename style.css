@@ -217,7 +217,6 @@ body::before {
     inset: 0;
     border-radius: var(--radius);
     backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
     overflow: hidden;
 }
 
@@ -467,6 +466,8 @@ body::before {
    ============================================================ */
 .payment-form {
     background: var(--glass-bg);
+    /* -webkit-backdrop-filter required for Safari, which does not support
+       the unprefixed version in all versions */
     backdrop-filter: blur(22px);
     -webkit-backdrop-filter: blur(22px);
     border: 1px solid var(--glass-border);
@@ -519,6 +520,7 @@ body::before {
     padding-right: 3.2rem;
     outline: none;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    /* -webkit-appearance required to override Safari's native form control styling */
     -webkit-appearance: none;
     appearance: none;
 }
